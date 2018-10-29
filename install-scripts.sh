@@ -314,6 +314,17 @@ installDocker() {
     sudo apt install -y docker-ce;
     curlToFile "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" "/usr/local/bin/docker-compose";
     sudo chmod +x /usr/local/bin/docker-compose;
+    sudo usermod -aG docker $USER;
+    breakLine;
+}
+
+# Lando
+##########################################################
+installLando() {
+    title "Installing Lando";
+    curlToFile "https://github.com/lando/lando/releases/download/lando-v3.0.0-rc.1/lando-v3.0.0-rc.1.deb" "lando.deb";
+    sudo dpkg -i ~/lando.deb;
+    sudo rm ~/lando.deb;
     breakLine;
 }
 
@@ -520,23 +531,24 @@ options=(
     12 "Memcached server" off
     13 "Redis server" off
     14 "Docker CE (with docker compose)" off
-    15 "Kubernetes (Kubectl)" off
-    16 "Postman" off
-    17 "Laravel installer" off
-    18 "Wine" off
-    19 "SQLite (database tool)" on
-    20 "DBeaver (database tool)" off
-    21 "Atom IDE" off
-    22 "VS Code IDE" on
-    23 "Sublime Text IDE" off
-    24 "PhpStorm IDE" off
-    25 "Software Center" on
-    26 "Remmina (Remote Desktop Client)" off
-    27 "FileZilla" off
-    28 "Pinta" off
-    29 "GIMP" off
-    30 "GitKraken" off
-    31 "NPM Tools" off
+    15 "Lando"
+    16 "Kubernetes (Kubectl)" off
+    17 "Postman" off
+    18 "Laravel installer" off
+    19 "Wine" off
+    20 "SQLite (database tool)" on
+    21 "DBeaver (database tool)" off
+    22 "Atom IDE" off
+    23 "VS Code IDE" on
+    24 "Sublime Text IDE" off
+    25 "PhpStorm IDE" off
+    26 "Software Center" on
+    27 "Remmina (Remote Desktop Client)" off
+    28 "FileZilla" off
+    29 "Pinta" off
+    30 "GIMP" off
+    31 "GitKraken" off
+    32 "NPM Tools" off
 );
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty);
@@ -580,12 +592,12 @@ do
         17) repoPhp ;;
         06) repoYarn ;;
         14) repoDocker ;;
-        15) repoKubernetes ;;
-        18) repoWine ;;
-        21) repoAtom ;;
-        22) repoVsCode ;;
-        23) repoSublime ;;
-	    26) repoRemmina ;;
+        16) repoKubernetes ;;
+        19) repoWine ;;
+        22) repoAtom ;;
+        23) repoVsCode ;;
+        24) repoSublime ;;
+	    27) repoRemmina ;;
     esac
 done
 notify "Required repositories have been added...";
@@ -638,28 +650,28 @@ do
         12) installMemcached ;;
         13) installRedis ;;
         14) installDocker ;;
-        15) installKubernetes ;;
-        16) installPostman ;;
-        17) 
+        16) installKubernetes ;;
+        17) installPostman ;;
+        18) 
             if [ $gotPhp -ne 1 ]; then 
                 installPhp
             fi
             installLaravel
         ;;
-        18) installWine ;;
-        19) installSqLite ;;
-        20) installDbeaver ;;
-        21) installAtom ;;
-        22) installVsCode ;;
-        23) installSublime ;;
-        24) installPhpStorm ;;
-        25) installSoftwareCenter ;;
-	    26) installRemmina ;;
-        27) installFileZilla ;;
-        28) installPinta ;;
-        29) installGIMP ;;
-        30) installGitkraken ;;
-        31) installNPMtools ;;
+        19) installWine ;;
+        20) installSqLite ;;
+        21) installDbeaver ;;
+        22) installAtom ;;
+        23) installVsCode ;;
+        24) installSublime ;;
+        25) installPhpStorm ;;
+        26) installSoftwareCenter ;;
+	    27) installRemmina ;;
+        28) installFileZilla ;;
+        29) installPinta ;;
+        30) installGIMP ;;
+        31) installGitkraken ;;
+        32) installNPMtools ;;
     esac
 done
 
