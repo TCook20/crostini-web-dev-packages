@@ -77,37 +77,6 @@ repoDocker() {
     fi
 }
 
-# Kubernetes
-##########################################################
-repoKubernetes() {
-    if [ ! -f /etc/apt/sources.list.d/kubernetes.list ]; then
-        notify "Adding Kubernetes repository";
-        curl -fsSL "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo apt-key add -;
-        echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list;
-    fi   
-}
-
-# Wine
-##########################################################
-repoWine() {
-    if [ ! -f /var/lib/dpkg/info/wine-stable.list ]; then
-        notify "Adding Wine repository";
-        sudo dpkg --add-architecture i386;
-        curl -fsSL "https://dl.winehq.org/wine-builds/Release.key" | sudo apt-key add -;
-        sudo apt-add-repository "https://dl.winehq.org/wine-builds/debian/";
-    fi
-}
-
-# Atom
-##########################################################
-repoAtom() {
-    if [ ! -f /etc/apt/sources.list.d/atom.list ]; then
-        notify "Adding Atom IDE repository";
-        curl -fsSL https://packagecloud.io/AtomEditor/atom/gpgkey | sudo apt-key add -;
-        echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" | sudo tee /etc/apt/sources.list.d/atom.list;
-    fi
-}
-
 # VS Code
 ##########################################################
 repoVsCode() {
@@ -126,16 +95,6 @@ repoSublime() {
         notify "Adding Sublime text repository";
         curl -fsSL "https://download.sublimetext.com/sublimehq-pub.gpg" | sudo apt-key add -;
         echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list;
-    fi
-}
-
-# Remmina
-##########################################################
-repoRemmina() {
-	if [ ! -f /etc/apt/sources.list.d/remmina.list ]; then
-		notify "Adding Remmina repository";
-		sudo touch /etc/apt/sources.list.d/remmina.list;
-		echo 'deb http://ftp.debian.org/debian stretch-backports main' | sudo tee --append /etc/apt/sources.list.d/stretch-backports.list >> /dev/null
     fi
 }
 
@@ -176,22 +135,6 @@ installNode() {
 installReactNative() {
     title "Installing React Native";
     sudo npm install -g create-react-native-app;
-    breakLine;
-}
-
-# Cordova
-##########################################################
-installCordova() {
-    title "Installing Apache Cordova";
-    sudo npm install -g cordova;
-    breakLine;
-}
-
-# Phonegap
-##########################################################
-installPhoneGap() {
-    title "Installing Phone Gap";
-    sudo npm install -g phonegap;
     breakLine;
 }
 
@@ -242,26 +185,6 @@ installYarn() {
     breakLine;
 }
 
-# Memcached
-##########################################################
-installMemcached() {
-    title "Installing Memcached";
-    sudo apt install -y memcached;
-    sudo systemctl start memcached;
-    sudo systemctl enable memcached;
-    breakLine;
-}
-
-# Redis
-##########################################################
-installRedis() {
-    title "Installing Redis";
-    sudo apt install -y redis-server;
-    sudo systemctl start redis;
-    sudo systemctl enable redis;
-    breakLine;
-}
-
 # Composer
 ##########################################################
 installComposer() {
@@ -269,15 +192,6 @@ installComposer() {
     php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');";
     sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer;
     sudo rm /tmp/composer-setup.php;
-    breakLine;
-}
-
-# Laravel Installer
-##########################################################
-installLaravel() {
-    title "Installing Laravel Installer";
-    composer global require "laravel/installer";
-    echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' | tee -a ~/.bashrc;
     breakLine;
 }
 
@@ -328,73 +242,6 @@ installLando() {
     breakLine;
 }
 
-# Kubernetes
-##########################################################
-installKubernetes() {
-    title "Installing Kubernetes";
-    sudo apt install -y kubectl;
-    breakLine;
-}
-
-# Wine
-##########################################################
-installWine() {
-    title "Installing Wine & Mono";
-    
-    sudo apt install -y cabextract;
-    sudo apt install -y --install-recommends winehq-stable;
-    sudo apt install -y mono-vbnc;
-
-    notify "Installing windows fonts for wine apps";
-    curlToFile "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" "winetricks";
-    sudo chmod +x ~/winetricks;
-    ./winetricks allfonts;
-    echo "y" | rm ~/winetricks;
-    
-    notify "Applying font smoothing to wine apps";
-    curlToFile ${repoUrl}"wine_fontsmoothing.sh" "wine_fontsmoothing";
-    sudo chmod +x ~/wine_fontsmoothing;
-    sudo ./wine_fontsmoothing;
-    echo "y" | rm ~/wine_fontsmoothing;
-    clear;
-    
-    notify "Installing Royale 2007 theme for windows apps";
-    curlToFile "http://www.gratos.be/wincustomize/compressed/Royale_2007_for_XP_by_Baal_wa_astarte.zip" "Royale_2007.zip";
-    
-    sudo chown -R $(whoami) ~/;
-    mkdir -p ~/.wine/drive_c/Resources/Themes/;
-    unzip ~/Royale_2007.zip -d ~/.wine/drive_c/Resources/Themes/;
-    echo "y" | rm ~/Royale_2007.zip;
-    breakLine;
-}
-
-# Postman
-##########################################################
-installPostman() {
-    title "Installing Postman";
-    curlToFile "https://dl.pstmn.io/download/latest/linux64" "postman.tar.gz";
-    sudo tar xfz ~/postman.tar.gz;
-    
-    sudo rm -rf /opt/postman/;
-    sudo mkdir /opt/postman/;
-    sudo mv ~/Postman*/* /opt/postman/;
-    sudo rm -rf ~/Postman*;
-    sudo rm -rf ~/postman.tar.gz;
-    sudo ln -s /opt/postman/Postman /usr/bin/postman;
-    
-    notify "Adding desktop file for Postman";
-    curlToFile ${repoUrl}"desktop/postman.desktop" "/usr/share/applications/postman.desktop";
-    breakLine;
-}
-
-# Atom IDE
-##########################################################
-installAtom() {
-    title "Installing Atom IDE";
-    sudo apt install -y atom;
-    breakLine;
-}
-
 # VS Code
 ##########################################################
 installVsCode() {
@@ -412,23 +259,6 @@ installSublime() {
     sudo apt install -y sublime-text;
     sudo apt install -y python-pip;
     sudo pip install -U CodeIntel;
-    
-    sudo chown -R $(whoami) ~/;
-    
-    mkdir -p ~/.config/sublime-text-3/Packages/User/;
-    
-    notify "Adding pre-installed packages for sublime";
-    curlToFile "${repoUrl}settings/PackageControl.sublime-settings" ".config/sublime-text-3/Packages/User/Package Control.sublime-settings";
-    
-    notify "Applying default preferences to sublime";
-    curlToFile "${repoUrl}settings/Preferences.sublime-settings" ".config/sublime-text-3/Packages/User/Preferences.sublime-settings";
-    
-    notify "Installing additional binaries for sublime auto-complete";
-    curlToFile "https://github.com/emmetio/pyv8-binaries/raw/master/pyv8-linux64-p3.zip" "bin.zip";
-    
-    sudo mkdir -p ".config/sublime-text-3/Installed Packages/PyV8/";
-    sudo unzip ~/bin.zip -d ".config/sublime-text-3/Installed Packages/PyV8/";
-    sudo rm ~/bin.zip;
     breakLine;
 }
 
@@ -455,14 +285,6 @@ installPhpStorm() {
 installFileZilla() {
     title "Installing FileZilla";
     sudo apt install -y filezilla;
-    breakLine;
-}
-
-# Remmina
-##########################################################
-installRemmina() {
-    title "Installing Remmina Client";
-    sudo apt install -t -y stretch-backports remmina remmina-plugin-rdp remmina-plugin-secret;
     breakLine;
 }
 
@@ -522,33 +344,23 @@ options=(
     03 "PHP v7.3 with PECL" on
     04 "Ruby" off
     05 "Python" off
-    06 "Yarn (package manager)" on
+    06 "Yarn (package manager)" off
     07 "Composer (package manager)" on
     08 "React Native" off
-    09 "Apache Cordova" off
-    10 "Phonegap" off
-    11 "Webpack" on
-    12 "Memcached server" off
-    13 "Redis server" off
-    14 "Docker CE (with docker compose)" off
-    15 "Lando"
-    16 "Kubernetes (Kubectl)" off
-    17 "Postman" off
-    18 "Laravel installer" off
-    19 "Wine" off
-    20 "SQLite (database tool)" on
-    21 "DBeaver (database tool)" off
-    22 "Atom IDE" off
-    23 "VS Code IDE" on
-    24 "Sublime Text IDE" off
-    25 "PhpStorm IDE" off
-    26 "Software Center" on
-    27 "Remmina (Remote Desktop Client)" off
-    28 "FileZilla" off
-    29 "Pinta" off
-    30 "GIMP" off
-    31 "GitKraken" off
-    32 "NPM Tools" off
+    09 "Webpack" on
+    10 "Docker CE (with docker compose)" off
+    11 "Lando"
+    12 "SQLite (database tool)" on
+    13 "DBeaver (database tool)" off
+    14 "VS Code IDE" on
+    15 "Sublime Text IDE" off
+    16 "PhpStorm IDE" off
+    17 "Software Center" on
+    18 "FileZilla" off
+    19 "Pinta" off
+    20 "GIMP" off
+    21 "GitKraken" off
+    22 "NPM Tools" off
 );
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty);
@@ -591,13 +403,9 @@ do
         07) repoPhp ;;
         17) repoPhp ;;
         06) repoYarn ;;
-        14) repoDocker ;;
-        16) repoKubernetes ;;
-        19) repoWine ;;
-        22) repoAtom ;;
-        23) repoVsCode ;;
-        24) repoSublime ;;
-	    27) repoRemmina ;;
+        10) repoDocker ;;
+        14) repoVsCode ;;
+        15) repoSublime ;;
     esac
 done
 notify "Required repositories have been added...";
@@ -633,45 +441,21 @@ do
             if [ $gotNode -ne 1 ]; then 
                 installNode 
             fi
-            installCordova
-        ;;
-        10) 
-            if [ $gotNode -ne 1 ]; then 
-                installNode 
-            fi
-            installPhoneGap
-        ;;
-        11) 
-            if [ $gotNode -ne 1 ]; then 
-                installNode 
-            fi
             installWebpack
         ;;
-        12) installMemcached ;;
-        13) installRedis ;;
-        14) installDocker ;;
-        16) installKubernetes ;;
-        17) installPostman ;;
-        18) 
-            if [ $gotPhp -ne 1 ]; then 
-                installPhp
-            fi
-            installLaravel
-        ;;
-        19) installWine ;;
-        20) installSqLite ;;
-        21) installDbeaver ;;
-        22) installAtom ;;
-        23) installVsCode ;;
-        24) installSublime ;;
-        25) installPhpStorm ;;
-        26) installSoftwareCenter ;;
-	    27) installRemmina ;;
-        28) installFileZilla ;;
-        29) installPinta ;;
-        30) installGIMP ;;
-        31) installGitkraken ;;
-        32) installNPMtools ;;
+        10) installDocker ;;
+        11) installLando ;;
+        12) installSqLite ;;
+        13) installDbeaver ;;
+        14) installVsCode ;;
+        15) installSublime ;;
+        16) installPhpStorm ;;
+        17) installSoftwareCenter ;;
+        18) installFileZilla ;;
+        19) installPinta ;;
+        20) installGIMP ;;
+        21) installGitkraken ;;
+        22) installNPMtools ;;
     esac
 done
 
