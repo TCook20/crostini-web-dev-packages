@@ -531,30 +531,30 @@ options=(
     01 "Git" on
     02 "Node v8" on
     03 "PHP v7.3 with PECL" on
-    04 "Ruby" off
+    04 "Ruby" on
     05 "Python" off
     06 "GoLang" off
-    07 "Yarn (package manager)" on
+    07 "Yarn (package manager)" off
     08 "Composer (package manager)" on
-    09 "React Native" on
+    09 "React Native" off
     10 "Apache Cordova" on
-    11 "Phonegap" on
+    11 "Phonegap" off
     12 "Webpack" on
-    13 "Memcached server" on
-    14 "Redis server" on
+    13 "Memcached server" off
+    14 "Redis server" off
     15 "Docker CE (with docker compose)" off
     16 "Kubernetes (Kubectl)" off
-    17 "Helm v2.10" on
-    18 "Sops v3.1.1" on
-    19 "Postman" on
-    20 "Laravel installer" on
+    17 "Helm v2.10" off
+    18 "Sops v3.1.1" off
+    19 "Postman" off
+    20 "Laravel installer" off
     21 "Wine" off
-    22 "SQLite (database tool)" on
-    23 "DBeaver (database tool)" off
-    24 "Redis Desktop Manager" on
+    22 "SQLite (database tool)" off
+    23 "DBeaver (database tool)" on
+    24 "Redis Desktop Manager" off
     25 "Atom IDE" off
-    26 "VS Code IDE" off
-    27 "Sublime Text IDE" on
+    26 "VS Code IDE" on
+    27 "Sublime Text IDE" off
     28 "Software Center" on
     29 "Remmina (Remote Desktop Client)" off
     30 "Google Cloud SDK" off
