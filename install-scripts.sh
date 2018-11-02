@@ -39,7 +39,6 @@ curlToFile() {
 ###############################################################
 ## GLOBALS
 ###############################################################
-repoUrl="https://raw.githubusercontent.com/andrewbrg/deb9-dev-machine/master/";
 gotPhp=0;
 gotNode=0;
 
@@ -85,16 +84,6 @@ repoVsCode() {
         curl "https://packages.microsoft.com/keys/microsoft.asc" | gpg --dearmor > microsoft.gpg;
         sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/;
         echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list;
-    fi
-}
-
-# Sublime
-##########################################################
-repoSublime() {
-    if [ ! -f /etc/apt/sources.list.d/sublime-text.list ]; then
-        notify "Adding Sublime text repository";
-        curl -fsSL "https://download.sublimetext.com/sublimehq-pub.gpg" | sudo apt-key add -;
-        echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list;
     fi
 }
 
@@ -251,35 +240,6 @@ installVsCode() {
     breakLine;
 }
 
-# Sublime Text
-##########################################################
-installSublime() {
-    title "Installing Sublime Text";
-
-    sudo apt install -y sublime-text;
-    sudo apt install -y python-pip;
-    sudo pip install -U CodeIntel;
-    breakLine;
-}
-
-# PHP Storm
-##########################################################
-installPhpStorm() {
-    title "Installing PhpStorm IDE";
-    curlToFile "https://download.jetbrains.com/webide/PhpStorm-2018.2.2.tar.gz" "phpstorm.tar.gz";
-    sudo tar xfz ~/phpstorm.tar.gz;
-    
-    sudo rm -rf /opt/phpstorm/;
-    sudo mkdir /opt/phpstorm/;
-    sudo mv ~/PhpStorm-*/* /opt/phpstorm/;
-    sudo rm -rf ~/phpstorm.tar.gz;
-    sudo rm -rf ~/PhpStorm-*;
-    
-    notify "Adding desktop file for PhpStorm";
-    curlToFile ${repoUrl}"desktop/jetbrains-phpstorm.desktop" "/usr/share/applications/jetbrains-phpstorm.desktop";
-    breakLine;
-}
-
 # FileZilla
 ##########################################################
 installFileZilla() {
@@ -353,14 +313,12 @@ options=(
     12 "SQLite (database tool)" on
     13 "DBeaver (database tool)" off
     14 "VS Code IDE" on
-    15 "Sublime Text IDE" off
-    16 "PhpStorm IDE" off
-    17 "Software Center" on
-    18 "FileZilla" off
-    19 "Pinta" off
-    20 "GIMP" off
-    21 "GitKraken" off
-    22 "NPM Tools" off
+    15 "Software Center" on
+    16 "FileZilla" off
+    17 "Pinta" off
+    28 "GIMP" off
+    19 "GitKraken" off
+    20 "NPM Tools" off
 );
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty);
@@ -388,7 +346,6 @@ title "Installing Pre-Requisite Packages";
     libssh2-1-dev \
     libssl-dev \
     nano \
-    vim \
     preload \
     gksu;
     
@@ -405,7 +362,6 @@ do
         06) repoYarn ;;
         10) repoDocker ;;
         14) repoVsCode ;;
-        15) repoSublime ;;
     esac
 done
 notify "Required repositories have been added...";
@@ -448,14 +404,12 @@ do
         12) installSqLite ;;
         13) installDbeaver ;;
         14) installVsCode ;;
-        15) installSublime ;;
-        16) installPhpStorm ;;
-        17) installSoftwareCenter ;;
-        18) installFileZilla ;;
-        19) installPinta ;;
-        20) installGIMP ;;
-        21) installGitkraken ;;
-        22) installNPMtools ;;
+        15) installSoftwareCenter ;;
+        16) installFileZilla ;;
+        17) installPinta ;;
+        18) installGIMP ;;
+        19) installGitkraken ;;
+        20) installNPMtools ;;
     esac
 done
 
