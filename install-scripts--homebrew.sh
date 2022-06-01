@@ -40,6 +40,9 @@ curlToFile() {
 ## GLOBALS
 ###############################################################
 repoUrl="https://raw.githubusercontent.com/tcook20/crostini-web-dev-packages/master/";
+GIT_EDITOR="code"
+HOMEBREW_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+NVM_URL="https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh"
 gotPhp=0;
 gotNode=0;
 gotGoLang=0;
@@ -56,6 +59,17 @@ repoDocker() {
         sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable";
     sudo groupadd docker;
     sudo usermod -aG docker $USER;
+    fi
+}
+
+# MS Edge
+repoMSEdge() {
+    if [ ! -f /etc/apt/sources.list.d/microsoft-edge.list ]; then
+        notify "Adding MS Edge repository";
+        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg;
+        sudo install -o root -g root -m 644 microsoft.gpg /usr/share/keyrings/;
+        sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list';
+        sudo rm microsoft.gpg;
     fi
 }
 
@@ -76,7 +90,8 @@ repoVsCode() {
 # Homebrew
 installHomebrew() {
     title "Installing Homebrew";
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
+    /bin/bash -c "$(curl -fsSL $HOMEBREW_URL)"
+    brew update
     breakLine;
 }
 
@@ -121,8 +136,13 @@ installFirefoxDeveloper() {
 installGit() {
     title "Installing Git";
     brew install git;
-    git config --global user.name "Travis Cook"
-    git config --global core.editor code
+    read -p 'Enter your name: ' GIT_USER
+    read -p 'Enter your email: ' GIT_EMAIL
+    git config --global core.editor "$GIT_EDITOR --wait"
+    git config --global core.ignorecase false
+    git config --global pull.rebase false
+    git config --global user.email ${GIT_EMAIL}
+    git config --global user.name ${GIT_USER}
     git config --global credential.helper store
     breakLine;
 }
@@ -270,6 +290,17 @@ installYarn() {
     breakLine;
 }
 
+# ZSH
+installZsh() {
+    title "Installing ZSH";
+    brew install zsh
+    chsh -s /usr/local/bin/zsh
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+    echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
+    breakLine;
+}
+
 ###############################################################
 ## MAIN PROGRAM
 ###############################################################
@@ -349,6 +380,7 @@ for choice in $choices
 do
     case $choice in
         13) repoVsCode ;;
+        16) repoMSEdge ;;
         22) repoDocker ;;
     esac
 done
@@ -401,4 +433,4 @@ title "Finalising & Cleaning Up...";
     sudo apt autoremove -y --purge;
 breakLine;
 
-notify "Great, the installation is complete =)";
+notify "Great, the installation is complete";
