@@ -188,7 +188,7 @@ installLocalbyFlywheel() {
 # Microsoft Edge
 installMSEdge() {
     title "Installing Microsoft Edge";
-    brew install --cask microsoft-edge;
+    sudo apt install microsoft-edge-stable;
     breakLine;
 }
 
@@ -275,7 +275,7 @@ installTowerGit() {
 # VS Code
 installVsCode() {
     title "Installing VS Code";
-    brew install --cask visual-studio-code
+    sudo apt install code -y
     breakLine;
 }
 
