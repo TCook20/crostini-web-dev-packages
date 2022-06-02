@@ -90,8 +90,12 @@ repoVsCode() {
 # Homebrew
 installHomebrew() {
     title "Installing Homebrew";
-    /bin/bash -c "$(curl -fsSL $HOMEBREW_URL)"
-    brew update
+    sudo apt-get install build-essential;
+    /bin/bash -c "$(curl -fsSL $HOMEBREW_URL)";
+    echo 'eval "$(~/.linuxbrew/bin/brew shellenv)"' >> ~/.profile;
+    eval "$(~/.linuxbrew/bin/brew shellenv)";
+    brew update;
+    brew install gcc;
     breakLine;
 }
 
