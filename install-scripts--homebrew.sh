@@ -321,30 +321,29 @@ cmd=(dialog --backtitle "Debian 11 Developer Container - USAGE: <space> select/u
 --checklist "Select what you would like installed:" 35 50 50);
 
 options=(
-    01 "Homebrew" on
-    02 "Git" on
-    03 "Node v8" on
-    04 "PHP v7.4" on
-    05 "NPM Tools" on
-    06 "Python" off
-    07 "GoLang" off
-    08 "Yarn (package manager)" on
-    09 "Composer (package manager)" on
-    10 "React Native" off
-    11 "Webpack" on
-    12 "VS Code" on
-    13 "Sublime Text IDE" off
-    14 "Firefox" off
-    15 "Firefox Developer Edition" off
-    16 "Microsoft Edge" off
-    17 "Software Center" off
-    18 "Laravel installer" off
-    19 "Lando" off
-    20 "Local by Flywheel" off
-    21 "Docker" off
-    22 "Wine" off
-    23 "GitKraken" off
-    24 "DBeaver (database tool)" off
+    01 "Git" on
+    02 "Node v8" on
+    03 "PHP v7.4" on
+    04 "NPM Tools" on
+    05 "Python" off
+    06 "GoLang" off
+    07 "Yarn (package manager)" on
+    08 "Composer (package manager)" on
+    09 "React Native" off
+    10 "Webpack" on
+    11 "VS Code" on
+    12 "Sublime Text IDE" off
+    13 "Firefox" off
+    14 "Firefox Developer Edition" off
+    15 "Microsoft Edge" off
+    16 "Software Center" off
+    17 "Laravel installer" off
+    18 "Lando" off
+    19 "Local by Flywheel" off
+    20 "Docker" off
+    21 "Wine" off
+    22 "GitKraken" off
+    23 "DBeaver (database tool)" off
 );
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty);
@@ -353,7 +352,7 @@ clear;
 
 # Preperation
 ##########################################################
-title "Installing Pre-Requisite Packages";
+title "Installing Pre-Requisite Packages and Homebrew";
     cd ~/;
     sudo chown -R $(whoami) ~/
     sudo apt update;
@@ -378,6 +377,7 @@ title "Installing Pre-Requisite Packages";
     snapd;
     
     sudo updatedb;
+    installHomebrew;
 breakLine;
 
 title "Adding Repositories";
@@ -400,30 +400,29 @@ breakLine;
 for choice in $choices
 do
     case $choice in
-        01) installHomebrew ;;
-        02) installGit ;;
-        03) installNode ;;
-        04) installPhp ;;
-        05) installNPMtools ;;
-        06) installPython ;;
-        07) installGoLang ;;
-        08) installYarn ;;
-        09) installComposer ;;
-        10) installReactNative ;;
-        11) installWebpack ;;
-        12) installVsCode ;;
-        13) installSublime ;;
-        14) installFirefox ;;
-        15) installFirefoxDeveloper ;;
-        16) installMSEdge ;;
-        17) installSoftwareCenter ;;
-        18) installLaravel ;;
-        19) installLando ;;
-        20) installLocalbyFlywheel ;;
-        21) installDocker ;;
-        22) installWine ;;
-        23) installGitkraken ;;
-        24) installDbeaver ;;
+        01) installGit ;;
+        02) installNode ;;
+        03) installPhp ;;
+        04) installNPMtools ;;
+        05) installPython ;;
+        06) installGoLang ;;
+        07) installYarn ;;
+        08) installComposer ;;
+        09) installReactNative ;;
+        10) installWebpack ;;
+        11) installVsCode ;;
+        12) installSublime ;;
+        13) installFirefox ;;
+        14) installFirefoxDeveloper ;;
+        15) installMSEdge ;;
+        16) installSoftwareCenter ;;
+        17) installLaravel ;;
+        18) installLando ;;
+        19) installLocalbyFlywheel ;;
+        20) installDocker ;;
+        21) installWine ;;
+        22) installGitkraken ;;
+        23) installDbeaver ;;
     esac
 done
 
