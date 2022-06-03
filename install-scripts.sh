@@ -39,7 +39,10 @@ curlToFile() {
 ###############################################################
 ## GLOBALS
 ###############################################################
-repoUrl="https://raw.githubusercontent.com/andrewbrg/deb9-dev-machine/master/";
+repoUrl="https://raw.githubusercontent.com/tcook20/crostini-web-dev-packages/master/";
+GIT_EDITOR="code"
+HOMEBREW_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+NVM_URL="https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh"
 gotPhp=0;
 gotNode=0;
 gotGoLang=0;
@@ -48,28 +51,16 @@ gotGoLang=0;
 ## REPOSITORIES
 ###############################################################
 
-# PHP 7.2
-##########################################################
-repoPhp() {
-    if [ ! -f /etc/apt/sources.list.d/php.list ]; then
-        notify "Adding PHP sury repository";
-        curl -fsSL "https://packages.sury.org/php/apt.gpg" | sudo apt-key add -;
-        echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list;
-    fi
-}
-
-# Yarn
-##########################################################
-repoYarn() {
-    if [ ! -f /etc/apt/sources.list.d/yarn.list ]; then
-        notify "Adding Yarn repository";
-        curl -fsSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | sudo apt-key add -;
-        echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list;
+# Atom
+repoAtom() {
+    if [ ! -f /etc/apt/sources.list.d/atom.list ]; then
+        notify "Adding Atom IDE repository";
+        curl -fsSL https://packagecloud.io/AtomEditor/atom/gpgkey | sudo apt-key add -;
+        echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" | sudo tee /etc/apt/sources.list.d/atom.list;
     fi
 }
 
 # Docker CE
-##########################################################
 repoDocker() {
     if [ ! -f /var/lib/dpkg/info/docker-ce.list ]; then
         notify "Adding Docker repository";
@@ -80,39 +71,36 @@ repoDocker() {
     fi
 }
 
-# Kubernetes
-##########################################################
-repoKubernetes() {
-    if [ ! -f /etc/apt/sources.list.d/kubernetes.list ]; then
-        notify "Adding Kubernetes repository";
-        curl -fsSL "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo apt-key add -;
-        echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list;
-    fi   
-}
-
-# Wine
-##########################################################
-repoWine() {
-    if [ ! -f /var/lib/dpkg/info/wine-stable.list ]; then
-        notify "Adding Wine repository";
-        sudo dpkg --add-architecture i386;
-        curl -fsSL "https://dl.winehq.org/wine-builds/Release.key" | sudo apt-key add -;
-        sudo apt-add-repository "https://dl.winehq.org/wine-builds/debian/";
+# MS Edge
+repoMSEdge() {
+    if [ ! -f /etc/apt/sources.list.d/microsoft-edge.list ]; then
+        notify "Adding MS Edge repository";
+        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg;
+        sudo install -o root -g root -m 644 microsoft.gpg /usr/share/keyrings/;
+        sudo sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list';
+        sudo rm microsoft.gpg;
     fi
 }
 
-# Atom
-##########################################################
-repoAtom() {
-    if [ ! -f /etc/apt/sources.list.d/atom.list ]; then
-        notify "Adding Atom IDE repository";
-        curl -fsSL https://packagecloud.io/AtomEditor/atom/gpgkey | sudo apt-key add -;
-        echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" | sudo tee /etc/apt/sources.list.d/atom.list;
+# PHP
+repoPhp() {
+    if [ ! -f /etc/apt/sources.list.d/php.list ]; then
+        notify "Adding PHP sury repository";
+        curl -fsSL "https://packages.sury.org/php/apt.gpg" | sudo apt-key add -;
+        echo "deb https://packages.sury.org/php/ stretch main" | sudo tee /etc/apt/sources.list.d/php.list;
+    fi
+}
+
+# Sublime
+repoSublime() {
+    if [ ! -f /etc/apt/sources.list.d/sublime-text.list ]; then
+        notify "Adding Sublime text repository";
+        curl -fsSL "https://download.sublimetext.com/sublimehq-pub.gpg" | sudo apt-key add -;
+        echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list;
     fi
 }
 
 # VS Code
-##########################################################
 repoVsCode() {
     if [ ! -f /etc/apt/sources.list.d/vscode.list ]; then
         notify "Adding VS Code repository";
@@ -122,205 +110,51 @@ repoVsCode() {
     fi
 }
 
-# Sublime
-##########################################################
-repoSublime() {
-    if [ ! -f /etc/apt/sources.list.d/sublime-text.list ]; then
-        notify "Adding Sublime text repository";
-        curl -fsSL "https://download.sublimetext.com/sublimehq-pub.gpg" | sudo apt-key add -;
-        echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list;
+
+# Wine
+repoWine() {
+    if [ ! -f /var/lib/dpkg/info/wine-stable.list ]; then
+        notify "Adding Wine repository";
+        sudo dpkg --add-architecture i386;
+        curl -fsSL "https://dl.winehq.org/wine-builds/Release.key" | sudo apt-key add -;
+        sudo apt-add-repository "https://dl.winehq.org/wine-builds/debian/";
     fi
 }
 
-# Remmina
-##########################################################
-repoRemmina() {
-    if [ ! -f /etc/apt/sources.list.d/remmina.list ]; then
-        notify "Adding Remmina repository";
-        sudo touch /etc/apt/sources.list.d/remmina.list;
-        echo "deb http://ftp.debian.org/debian stretch-backports main" | sudo tee --append /etc/apt/sources.list.d/stretch-backports.list >> /dev/null
+# Yarn
+repoYarn() {
+    if [ ! -f /etc/apt/sources.list.d/yarn.list ]; then
+        notify "Adding Yarn repository";
+        curl -fsSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | sudo apt-key add -;
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list;
     fi
 }
-
-# Google Cloud SDK
-##########################################################
-repoGoogleSdk() {
-    if [ ! -f /etc/apt/sources.list.d/google-cloud-sdk.list ]; then
-        notify "Adding GCE repository";
-        export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)";
-        echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list;
-        curl -fsSL "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo apt-key add -;
-    fi
-}
-
 
 ###############################################################
 ## INSTALLATION
 ###############################################################
 
-# Debian Software Center
-installSoftwareCenter() {
-    sudo apt install -y gnome-software gnome-packagekit;
-}
-
-# Git
-##########################################################
-installGit() {
-    title "Installing Git";
-    sudo apt install -y git;
-    sudo git config --global user.name "Travis Cook"
-    sudo git config --global core.editor code
-    sudo git config --global credential.helper store
-    breakLine;
-}
-
-# Node 8
-##########################################################
-installNode() {
-    title "Installing Node 8";
-    curl -L "https://deb.nodesource.com/setup_8.x" | sudo -E bash -;
-    sudo apt install -y nodejs;
-    sudo chown -R $(whoami) /usr/lib/node_modules;
-    gotNode=1;
-    breakLine;
-}
-
-# React Native
-##########################################################
-installReactNative() {
-    title "Installing React Native";
-    sudo npm install -g create-react-native-app;
-    breakLine;
-}
-
-# Cordova
-##########################################################
-installCordova() {
-    title "Installing Apache Cordova";
-    sudo npm install -g cordova;
-    breakLine;
-}
-
-# Phonegap
-##########################################################
-installPhoneGap() {
-    title "Installing Phone Gap";
-    sudo npm install -g phonegap;
-    breakLine;
-}
-
-# Webpack
-##########################################################
-installWebpack() {
-    title "Installing Webpack";
-    sudo npm install -g webpack;
-    breakLine;
-}
-
-# PHP 7.2
-##########################################################
-installPhp() {
-    title "Installing PHP 7.3";
-    sudo apt install -y php7.3 php7.3-{bcmath,cli,common,curl,dev,ds,gd,intl,mbstring,mysql,sqlite,xdebug,xml,zip} php-pear php-memcached php-redis;
-    sudo apt install -y libphp-predis;
-    php --version;
-    
-    sudo pecl install igbinary ds;
-    gotPhp=1;
-    breakLine;
-}
-
-# Ruby
-##########################################################
-installRuby() {
-    title "Installing Ruby & DAPP";
-    sudo apt install -y ruby-dev gcc pkg-config;
-    sudo gem install dapp;
-    sudo gem install sass;
-    breakLine;
-}
-
-# Python
-##########################################################
-installPython() {
-    title "Installing Python & PIP";
-    sudo apt install -y python-pip;
-    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python;
-    sudo pip install --upgrade setuptools;
-    breakLine;
-}
-
-# GoLang
-##########################################################
-installGoLang() {
-    title "Installing GoLang";
-    sudo apt install -y golang;
-    echo 'export GOPATH=~/go' >> ~/.bashrc;
-    source ~/.bashrc;
-    mkdir $GOPATH;
-    gotGoLang=1;
-    breakLine;
-}
-
-# Yarn
-##########################################################
-installYarn() {
-    title "Installing Yarn";
-    sudo apt install -y yarn;
-    breakLine;
-}
-
-# Memcached
-##########################################################
-installMemcached() {
-    title "Installing Memcached";
-    sudo apt install -y memcached;
-    sudo systemctl start memcached;
-    sudo systemctl enable memcached;
-    breakLine;
-}
-
-# Redis
-##########################################################
-installRedis() {
-    title "Installing Redis";
-    sudo apt install -y redis-server;
-    sudo systemctl start redis;
-    sudo systemctl enable redis;
+# Atom IDE
+installAtom() {
+    title "Installing Atom IDE";
+    sudo apt install -y atom;
     breakLine;
 }
 
 # Composer
-##########################################################
 installComposer() {
     title "Installing Composer";
+    # brew install composer;
     php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');";
     sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer;
     sudo rm /tmp/composer-setup.php;
     breakLine;
 }
 
-# Laravel Installer
-##########################################################
-installLaravel() {
-    title "Installing Laravel Installer";
-    composer global require "laravel/installer";
-    echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' | tee -a ~/.bashrc;
-    breakLine;
-}
-
-# SQLite Browser
-##########################################################
-installSqLite() {
-    title "Installing SQLite Browser";
-    sudo apt install -y sqlitebrowser;
-    breakLine;    
-}
-
 # DBeaver
-##########################################################
 installDbeaver() {
     title "Installing DBeaver SQL Client";
+    # brew install --cask dbeaver-community;
     sudo apt install -y \
     ca-certificates-java* \
     java-common* \
@@ -335,61 +169,244 @@ installDbeaver() {
     breakLine;
 }
 
-# Redis Desktop Manager
-##########################################################
-installRedisDesktopManager() {
-    title "Installing Redis Desktop Manager";
-    sudo snap install redis-desktop-manager;
-    breakLine;
-}
-
 # Docker
-##########################################################
 installDocker() {
     title "Installing Docker CE with Docker Compose";
+    # brew install docker;
+    # brew install docker-compose;
     sudo apt install -y docker-ce;
     curlToFile "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" "/usr/local/bin/docker-compose";
     sudo chmod +x /usr/local/bin/docker-compose;
     breakLine;
 }
 
+# FileZilla
+installFileZilla() {
+    title "Installing FileZilla";
+    sudo apt install -y filezilla;
+    breakLine;
+}
+
+# Firefox
+installFirefox() {
+    title "Installing Firefox";
+    brew install --cask firefox;
+    breakLine;
+}
+
+# Firefox Developer Edition
+installFirefoxDeveloper() {
+    title "Installing Firefox Developer Edition";
+    brew tap homebrew/cask-versions;
+    brew install --cask firefox-developer-edition;
+    breakLine;
+}
+
+# Git
+installGit() {
+    title "Installing Git";
+    # sudo apt install -y git;
+    brew install git;
+    read -p 'Enter your name: ' GIT_USER
+    read -p 'Enter your email: ' GIT_EMAIL
+    git config --global core.editor "$GIT_EDITOR --wait"
+    git config --global core.ignorecase false
+    git config --global pull.rebase false
+    git config --global user.email ${GIT_EMAIL}
+    git config --global user.name ${GIT_USER}
+    git config --global credential.helper store
+    breakLine;
+}
+
+# GitKraken
+installGitkraken() {
+    title "Installing GitKraken";
+    # brew install --cask gitkraken;
+    curl -L https://release.gitkraken.com/linux/gitkraken-amd64.deb > gitkraken.deb
+    sudo apt-get install -y ./gitkraken.deb
+    sudo rm -f gitkraken.deb
+    breakLine;
+}
+
+# Gnome Software Center
+installGnomeSoftwareCenter() {
+    sudo apt install -y gnome-software;
+}
+
+# GoLang
+installGoLang() {
+    title "Installing GoLang";
+    # brew install go;
+    sudo apt install -y golang;
+    echo 'export GOPATH=~/go' >> ~/.bashrc;
+    source ~/.bashrc;
+    mkdir $GOPATH;
+    gotGoLang=1;
+    breakLine;
+}
+
+# Homebrew
+installHomebrew() {
+    title "Installing Homebrew";
+    sudo apt-get install build-essential;
+    /bin/bash -c "$(curl -fsSL $HOMEBREW_URL)";
+    echo 'eval "$(~/.linuxbrew/bin/brew shellenv)"' >> ~/.profile;
+    eval "$(~/.linuxbrew/bin/brew shellenv)";
+    brew update;
+    breakLine;
+}
+
 # Kubernetes
-##########################################################
 installKubernetes() {
     title "Installing Kubernetes";
     sudo apt install -y kubectl;
     breakLine;
 }
 
-# Helm
-##########################################################
-installHelm() {
-    title "Installing Helm v2.10";
-    curl -fsSl "https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz" -o helm-v2.10.0-linux-amd64.tar.gz;
-    tar -zxvf helm-v2.10.0-linux-amd64.tar.gz;
-    sudo mv linux-amd64/helm /usr/local/bin/helm;
-    sudo rm -rf linux-amd64 && sudo rm helm-v2.10.0-linux-amd64.tar.gz;
+# Lando
+installLando() {
+    title "Installing Lando";
+    # brew install --cask lando;
+    curlToFile "https://github.com/lando/lando/releases/download/lando-v3.6.4/lando-v3.6.4.deb" "lando.deb";
+    sudo dpkg -i ~/lando.deb;
+    sudo rm ~/lando.deb;
+    breakLine;
+}
+
+# Laravel Installer
+installLaravel() {
+    title "Installing Laravel Installer";
+    composer global require "laravel/installer";
+    echo 'export PATH="$PATH:$HOME/.config/composer/vendor/bin"' | tee -a ~/.bashrc;
+    breakLine;
+}
+
+# Local by Flywheel
+installLocalbyFlywheel() {
+    title "Installing Local by Flywheel";
+    brew install --cask local;
+    breakLine;
+}
+
+# Microsoft Edge
+installMSEdge() {
+    title "Installing Microsoft Edge";
+    sudo apt install microsoft-edge-stable;
+    # brew install --cask microsoft-edge;
+    breakLine;
+}
+
+# Node and NVM
+installNode() {
+    title "Installing Node and NVM";
+    brew install node;
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash;
+    gotNode=1;
+    breakLine;
+}
+
+# NPM Tools
+installNPMtools() {
+    title "Installing NPM Tools";
+    npm i -g npm
+    npm install -g sass
+    npm install -g gulp-cli gulp-dart-sass gulp-notify gulp-autoprefixer gulp-jshint gulp-uglify gulp-concat
+    npm install -g browser-sync jshint bower
+    npm install gulp -D
+    breakLine;
+}
+
+# PHP 7.4
+installPhp() {
+    title "Installing PHP 7.4";
+    brew install php;
+    brew install php@7.4;
+    gotPhp=1;
+    breakLine;
+}
+
+# Postman
+installPostman() {
+    title "Installing Postman";
+    # brew install --cask postman
+    curlToFile "https://dl.pstmn.io/download/latest/linux64" "postman.tar.gz";
+    sudo tar xfz ~/postman.tar.gz;
+    
+    sudo rm -rf /opt/postman/;
+    sudo mkdir /opt/postman/;
+    sudo mv ~/Postman*/* /opt/postman/;
+    sudo rm -rf ~/Postman*;
+    sudo rm -rf ~/postman.tar.gz;
+    sudo ln -s /opt/postman/Postman /usr/bin/postman;
+    
+    notify "Adding desktop file for Postman";
+    curlToFile ${repoUrl}"desktop/postman.desktop" "/usr/share/applications/postman.desktop";
+    breakLine;
+}
+
+# Python
+installPython() {
+    title "Installing Python & PIP";
+    sudo apt install -y python-pip;
+    curl "https://bootstrap.pypa.io/get-pip.py" | sudo python;
+    sudo pip install --upgrade setuptools;
+    breakLine;
+}
+
+# React Native
+installReactNative() {
+    title "Installing React Native";
+    sudo npm install -g create-react-native-app;
     breakLine;
 }
 
 # Sops
-##########################################################
 installSops() {
     title "Installing Sops v3.1.1";
+    # brew install sops
     wget -O sops_3.1.1_amd64.deb "https://github.com/mozilla/sops/releases/download/3.1.1/sops_3.1.1_amd64.deb";
     sudo dpkg -i sops_3.1.1_amd64.deb;
     sudo rm sops_3.1.1_amd64.deb;
     breakLine;
 }
 
+# SQLite Browser
+installSqLite() {
+    title "Installing SQLite Browser";
+    sudo apt install -y sqlitebrowser;
+    breakLine;    
+}
+
+# Sublime Text
+installSublime() {
+    title "Installing Sublime Text";
+    sudo apt install -y sublime-text;
+    # brew install --cask sublime-text;
+    breakLine;
+}
+
+# VS Code
+installVsCode() {
+    title "Installing VS Code";
+    sudo apt install code -y
+    # brew install --cask visual-studio-code
+    breakLine;
+}
+
+# Webpack
+installWebpack() {
+    title "Installing Webpack";
+    sudo npm install -g webpack;
+    breakLine;
+}
+
 # Wine
-##########################################################
 installWine() {
     title "Installing Wine & Mono";
-    
-    sudo apt install -y cabextract;
-    sudo apt install -y --install-recommends winehq-stable;
-    sudo apt install -y mono-vbnc;
+    # brew install --cask wine-stable
+    sudo apt install -y cabextract \
+    --install-recommends winehq-stable \
+    mono-vbnc;
 
     notify "Installing windows fonts for wine apps";
     curlToFile "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks" "winetricks";
@@ -414,104 +431,22 @@ installWine() {
     breakLine;
 }
 
-# Postman
-##########################################################
-installPostman() {
-    title "Installing Postman";
-    curlToFile "https://dl.pstmn.io/download/latest/linux64" "postman.tar.gz";
-    sudo tar xfz ~/postman.tar.gz;
-    
-    sudo rm -rf /opt/postman/;
-    sudo mkdir /opt/postman/;
-    sudo mv ~/Postman*/* /opt/postman/;
-    sudo rm -rf ~/Postman*;
-    sudo rm -rf ~/postman.tar.gz;
-    sudo ln -s /opt/postman/Postman /usr/bin/postman;
-    
-    notify "Adding desktop file for Postman";
-    curlToFile ${repoUrl}"desktop/postman.desktop" "/usr/share/applications/postman.desktop";
+# Yarn
+installYarn() {
+    title "Installing Yarn";
+    npm install --global yarn;
+    yarn set version berry;
     breakLine;
 }
 
-# Atom IDE
-##########################################################
-installAtom() {
-    title "Installing Atom IDE";
-    sudo apt install -y atom;
-    breakLine;
-}
-
-# VS Code
-##########################################################
-installVsCode() {
-    title "Installing VS Code IDE";
-    sudo apt install -y code;
-    code --install-extension Shan.code-settings-sync
-    breakLine;
-}
-
-# Sublime Text
-##########################################################
-installSublime() {
-    title "Installing Sublime Text";
-
-    sudo apt install -y sublime-text;
-    breakLine;
-}
-
-# Remmina
-##########################################################
-installRemmina() {
-    title "Installing Remmina Client";
-    sudo apt install -t stretch-backports remmina remmina-plugin-rdp remmina-plugin-secret -y;
-    breakLine;
-}
-
-# Google Cloud SDK
-##########################################################
-installGoogleSdk() {
-    title "Installing Google Cloud SDK";
-    sudo apt install -y google-cloud-sdk;
-    breakLine;
-}
-
-# Lando
-##########################################################
-installLando() {
-    title "Installing Lando";
-    curlToFile "https://github.com/lando/lando/releases/download/lando-v3.0.0-rc.1/lando-v3.0.0-rc.1.deb" "lando.deb";
-    sudo dpkg -i ~/lando.deb;
-    sudo rm ~/lando.deb;
-    breakLine;
-}
-
-# FileZilla
-##########################################################
-installFileZilla() {
-    title "Installing FileZilla";
-    sudo apt install -y filezilla;
-    breakLine;
-}
-
-# GitKraken
-##########################################################
-installGitkraken() {
-    title "Installing GitKraken";
-    curl -L https://release.gitkraken.com/linux/gitkraken-amd64.deb > gitkraken.deb
-    sudo apt-get install -y ./gitkraken.deb
-    sudo rm -f gitkraken.deb
-    breakLine;
-}
-
-# NPM Tools
-##########################################################
-installNPMtools() {
-    title "Installing NPM Tools";
-    sudo npm i -g npm
-    sudo npm install -g sass
-    sudo npm install -g gulp-cli gulp-ruby-sass gulp-notify gulp-autoprefixer gulp-jshint gulp-uglify gulp-concat
-    sudo npm install -g browser-sync jshint bower
-    sudo npm install gulp -D
+# ZSH
+installZsh() {
+    title "Installing ZSH";
+    brew install zsh
+    chsh -s /usr/local/bin/zsh
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
+    echo 'source ~/powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
     breakLine;
 }
 
@@ -520,7 +455,7 @@ installNPMtools() {
 ###############################################################
 sudo apt install -y dialog;
 
-cmd=(dialog --backtitle "Debian 9 Developer Container - USAGE: <space> select/unselect options & <enter> start installation." \
+cmd=(dialog --backtitle "Debian 11 Developer Container - USAGE: <space> select/unselect options & <enter> start installation." \
 --ascii-lines \
 --clear \
 --nocancel \
@@ -528,41 +463,31 @@ cmd=(dialog --backtitle "Debian 9 Developer Container - USAGE: <space> select/un
 --checklist "Select what you would like installed:" 35 50 50);
 
 options=(
-    01 "Git" on
-    02 "Node v8" on
-    03 "PHP v7.3 with PECL" on
-    04 "Ruby" on
-    05 "Python" off
-    06 "GoLang" off
-    07 "Yarn (package manager)" off
-    08 "Composer (package manager)" on
-    09 "React Native" off
-    10 "Apache Cordova" on
-    11 "Phonegap" off
+    01 "Homebrew" on
+    02 "ZSH" on
+    03 "Git" on
+    04 "Node v8" on
+    05 "PHP v7.4" on
+    06 "NPM Tools" on
+    07 "Python" off
+    08 "GoLang" off
+    09 "Yarn (package manager)" on
+    10 "Composer (package manager)" on
+    11 "React Native" off
     12 "Webpack" on
-    13 "Memcached server" off
-    14 "Redis server" off
-    15 "Docker CE (with docker compose)" off
-    16 "Kubernetes (Kubectl)" off
-    17 "Helm v2.10" off
-    18 "Sops v3.1.1" off
-    19 "Postman" off
-    20 "Laravel installer" off
-    21 "Wine" off
-    22 "SQLite (database tool)" off
-    23 "DBeaver (database tool)" on
-    24 "Redis Desktop Manager" off
-    25 "Atom IDE" off
-    26 "VS Code IDE" on
-    27 "Sublime Text IDE" off
-    28 "Software Center" on
-    29 "Remmina (Remote Desktop Client)" off
-    30 "Google Cloud SDK" off
-    31 "Lando" off
-    32 "FileZilla" on
-    33 "GitKraken" on
-    34 "NPM Tools" on
-    
+    13 "VS Code" on
+    14 "Sublime Text IDE" off
+    15 "Firefox" off
+    16 "Firefox Developer Edition" off
+    17 "Microsoft Edge" off
+    18 "Software Center" off
+    19 "Laravel installer" off
+    20 "Lando" off
+    21 "Local by Flywheel" off
+    22 "Docker" off
+    23 "Wine" off
+    24 "GitKraken" off
+    25 "DBeaver (database tool)" off
 );
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty);
@@ -571,7 +496,7 @@ clear;
 
 # Preperation
 ##########################################################
-title "Installing Pre-Requisite Packages";
+title "Installing Pre-Requisite Packages and Homebrew";
     cd ~/;
     sudo chown -R $(whoami) ~/
     sudo apt update;
@@ -602,18 +527,9 @@ title "Adding Repositories";
 for choice in $choices
 do
     case $choice in
-        03) repoPhp ;;
-        08) repoPhp ;;
-        20) repoPhp ;;
-        07) repoYarn ;;
-        15) repoDocker ;;
-        16) repoKubernetes ;;
-        21) repoWine ;;
-        25) repoAtom ;;
-        26) repoVsCode ;;
-        27) repoSublime ;;
-        30) repoRemmina ;;
-        31) repoGoogleSdk ;;
+        13) repoVsCode ;;
+        16) repoMSEdge ;;
+        22) repoDocker ;;
     esac
 done
 notify "Required repositories have been added...";
@@ -627,75 +543,31 @@ breakLine;
 for choice in $choices
 do
     case $choice in
-        01) installGit ;;
-        02) installNode ;;
-        03) installPhp ;;
-        04) installRuby ;;
-        05) installPython ;;
-        06) installGoLang ;;
-        07) installYarn ;;
-        08) 
-            if [ $gotPhp -ne 1 ]; then 
-                installPhp 
-            fi
-            installComposer
-        ;;
-        09) 
-            if [ $gotNode -ne 1 ]; then 
-                installNode 
-            fi
-            installReactNative
-        ;;
-        10) 
-            if [ $gotNode -ne 1 ]; then 
-                installNode 
-            fi
-            installCordova
-        ;;
-        11) 
-            if [ $gotNode -ne 1 ]; then 
-                installNode 
-            fi
-            installPhoneGap
-        ;;
-        12) 
-            if [ $gotNode -ne 1 ]; then 
-                installNode 
-            fi
-            installWebpack
-        ;;
-        13) installMemcached ;;
-        14) installRedis ;;
-        15) installDocker ;;
-        16) installKubernetes ;;
-        17) installHelm ;;
-        18) 
-            if [ $gotGoLang -ne 1 ]; then 
-                installGoLang
-            fi
-            installSops
-        ;;
-        19) installPostman ;;
-        20) 
-            if [ $gotPhp -ne 1 ]; then 
-                installPhp
-            fi
-            installLaravel
-        ;;
-        21) installWine ;;
-        22) installSqLite ;;
-        23) installDbeaver ;;
-        24) installRedisDesktopManager ;;
-        25) installAtom ;;
-        26) installVsCode ;;
-        27) installSublime ;;
-        28) installSoftwareCenter ;;   
-        29) installRemmina ;;
-        30) installGoogleSdk ;;
-        31) installLando ;;
-        32) installFileZilla ;;
-        33) installGitkraken ;;
-        34) installNPMtools ;;
+        01) installHomebrew ;;
+        02) installZsh ;;
+        03) installGit ;;
+        04) installNode ;;
+        05) installPhp ;;
+        06) installNPMtools ;;
+        07) installPython ;;
+        08) installGoLang ;;
+        09) installYarn ;;
+        10) installComposer ;;
+        11) installReactNative ;;
+        12) installWebpack ;;
+        13) installVsCode ;;
+        14) installSublime ;;
+        15) installFirefox ;;
+        16) installFirefoxDeveloper ;;
+        17) installMSEdge ;;
+        18) installGnomeSoftwareCenter ;;
+        19) installLaravel ;;
+        20) installLando ;;
+        21) installLocalbyFlywheel ;;
+        22) installDocker ;;
+        23) installWine ;;
+        24) installGitkraken ;;
+        25) installDbeaver ;;
     esac
 done
 
@@ -708,4 +580,4 @@ title "Finalising & Cleaning Up...";
     sudo apt autoremove -y --purge;
 breakLine;
 
-notify "Great, the installation is complete =)";
+notify "Great, the installation is complete";
