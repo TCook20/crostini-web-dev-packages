@@ -95,7 +95,6 @@ installHomebrew() {
     echo 'eval "$(~/.linuxbrew/bin/brew shellenv)"' >> ~/.profile;
     eval "$(~/.linuxbrew/bin/brew shellenv)";
     brew update;
-    brew install gcc;
     breakLine;
 }
 
@@ -325,30 +324,31 @@ cmd=(dialog --backtitle "Debian 11 Developer Container - USAGE: <space> select/u
 --checklist "Select what you would like installed:" 35 50 50);
 
 options=(
-    01 "ZSH" on
-    02 "Git" on
-    03 "Node v8" on
-    04 "PHP v7.4" on
-    05 "NPM Tools" on
-    06 "Python" off
-    07 "GoLang" off
-    08 "Yarn (package manager)" on
-    09 "Composer (package manager)" on
-    10 "React Native" off
-    11 "Webpack" on
-    12 "VS Code" on
-    13 "Sublime Text IDE" off
-    14 "Firefox" off
-    15 "Firefox Developer Edition" off
-    16 "Microsoft Edge" off
-    17 "Software Center" off
-    18 "Laravel installer" off
-    19 "Lando" off
-    20 "Local by Flywheel" off
-    21 "Docker" off
-    22 "Wine" off
-    23 "GitKraken" off
-    24 "DBeaver (database tool)" off
+    01 "Homebrew" on
+    02 "ZSH" on
+    03 "Git" on
+    04 "Node v8" on
+    05 "PHP v7.4" on
+    06 "NPM Tools" on
+    07 "Python" off
+    08 "GoLang" off
+    09 "Yarn (package manager)" on
+    10 "Composer (package manager)" on
+    11 "React Native" off
+    12 "Webpack" on
+    13 "VS Code" on
+    14 "Sublime Text IDE" off
+    15 "Firefox" off
+    16 "Firefox Developer Edition" off
+    17 "Microsoft Edge" off
+    18 "Software Center" off
+    19 "Laravel installer" off
+    20 "Lando" off
+    21 "Local by Flywheel" off
+    22 "Docker" off
+    23 "Wine" off
+    24 "GitKraken" off
+    25 "DBeaver (database tool)" off
 );
 
 choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty);
@@ -382,7 +382,6 @@ title "Installing Pre-Requisite Packages and Homebrew";
     snapd;
     
     sudo updatedb;
-    installHomebrew;
 breakLine;
 
 title "Adding Repositories";
@@ -405,30 +404,31 @@ breakLine;
 for choice in $choices
 do
     case $choice in
-        01) installZsh ;;
-        02) installGit ;;
-        03) installNode ;;
-        04) installPhp ;;
-        05) installNPMtools ;;
-        06) installPython ;;
-        07) installGoLang ;;
-        08) installYarn ;;
-        09) installComposer ;;
-        10) installReactNative ;;
-        11) installWebpack ;;
-        12) installVsCode ;;
-        13) installSublime ;;
-        14) installFirefox ;;
-        15) installFirefoxDeveloper ;;
-        16) installMSEdge ;;
-        17) installSoftwareCenter ;;
-        18) installLaravel ;;
-        19) installLando ;;
-        20) installLocalbyFlywheel ;;
-        21) installDocker ;;
-        22) installWine ;;
-        23) installGitkraken ;;
-        24) installDbeaver ;;
+        01) installHomebrew ;;
+        02) installZsh ;;
+        03) installGit ;;
+        04) installNode ;;
+        05) installPhp ;;
+        06) installNPMtools ;;
+        07) installPython ;;
+        08) installGoLang ;;
+        09) installYarn ;;
+        10) installComposer ;;
+        11) installReactNative ;;
+        12) installWebpack ;;
+        13) installVsCode ;;
+        14) installSublime ;;
+        15) installFirefox ;;
+        16) installFirefoxDeveloper ;;
+        17) installMSEdge ;;
+        18) installSoftwareCenter ;;
+        19) installLaravel ;;
+        20) installLando ;;
+        21) installLocalbyFlywheel ;;
+        22) installDocker ;;
+        23) installWine ;;
+        24) installGitkraken ;;
+        25) installDbeaver ;;
     esac
 done
 
